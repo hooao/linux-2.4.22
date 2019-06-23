@@ -47,21 +47,21 @@ static unsigned long __init init_bootmem_core (pg_data_t *pgdat,
 	unsigned long mapstart, unsigned long start, unsigned long end)
 {
 	bootmem_data_t *bdata = pgdat->bdata;
-	unsigned long mapsize = ((end - start)+7)/8;
+	unsigned long mapsize = ((end - start)+7)/8;//这是一个用来记录的bitmap，单位是字节数
 
-	pgdat->node_next = pgdat_list;
-	pgdat_list = pgdat;
+	pgdat->node_next = pgdat_list;//So pgdat_list 是一个双向链表的头
+	pgdat_list = pgdat;//这个头指向一个pgdat
 
-	mapsize = (mapsize + (sizeof(long) - 1UL)) & ~(sizeof(long) - 1UL);
-	bdata->node_bootmem_map = phys_to_virt(mapstart << PAGE_SHIFT);
-	bdata->node_boot_start = (start << PAGE_SHIFT);
-	bdata->node_low_pfn = end;
+	mapsize = (mapsize + (sizeof(long) - 1UL)) & ~(sizeof(long) - 1UL);//这里是4字节对齐，应该是为了性能考虑。
+	bdata->node_bootmem_map = phys_to_virt(mapstart << PAGE_SHIFT);//mapstart记录的是除去代码运行空间后的内存， 这里看起来是占用了第一个page。
+	bdata->node_boot_start = (start << PAGE_SHIFT);//这里是整个node 的起始
+	bdata->node_low_pfn = end;//整 个node  的结束
 
 	/*
 	 * Initially all pages are reserved - setup_arch() has to
 	 * register free RAM areas explicitly.
 	 */
-	memset(bdata->node_bootmem_map, 0xff, mapsize);
+	memset(bdata->node_bootmem_map, 0xff, mapsize);//将所有的页框设置为保留, bit=1表示可初分配器不可分配。
 
 	return mapsize;
 }

@@ -225,7 +225,7 @@ static unsigned int __init
 find_memend_and_nodes(struct meminfo *mi, struct node_info *np)
 {
 	unsigned int i, bootmem_pages = 0, memend_pfn = 0;
-
+//初始化NR_NODES 个 node, 其实也就2个
 	for (i = 0; i < NR_NODES; i++) {
 		np[i].start = -1U;
 		np[i].end = 0;
@@ -418,11 +418,11 @@ void __init bootmem_init(struct meminfo *mi)
 	unsigned int bootmap_pages, bootmap_pfn, map_pg;
 	int node, initrd_node;
 
-	bootmap_pages = find_memend_and_nodes(mi, np);
-	bootmap_pfn   = find_bootmap_pfn(0, mi, bootmap_pages);
+	bootmap_pages = find_memend_and_nodes(mi, np);//主要是page align，算出page个数
+	bootmap_pfn   = find_bootmap_pfn(0, mi, bootmap_pages);//抠掉np=0上程序执行所需的内存
 	initrd_node   = check_initrd(mi);
 
-	map_pg = bootmap_pfn;
+	map_pg = bootmap_pfn;//
 
 	/*
 	 * Initialise the bootmem nodes.
@@ -443,7 +443,7 @@ void __init bootmem_init(struct meminfo *mi)
 	 * (we could also do with rolling bootmem_init and paging_init
 	 * into one generic "memory_init" type function).
 	 */
-	np += numnodes - 1;
+	np += numnodes - 1;//找最后一个node。初始化node时是反着初始化的
 	for (node = numnodes - 1; node >= 0; node--, np--) {
 		/*
 		 * If there are no pages in this node, ignore it.
