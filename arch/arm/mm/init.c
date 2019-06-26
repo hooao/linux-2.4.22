@@ -197,7 +197,7 @@ find_bootmap_pfn(int node, struct meminfo *mi, unsigned int bootmap_pages)
 			continue;
 
 		if (start < start_pfn)
-			start = start_pfn;
+			start = start_pfn;//取代码尾部的pfn开始
 
 		if (end <= start)
 			continue;
@@ -418,11 +418,11 @@ void __init bootmem_init(struct meminfo *mi)
 	unsigned int bootmap_pages, bootmap_pfn, map_pg;
 	int node, initrd_node;
 
-	bootmap_pages = find_memend_and_nodes(mi, np);//主要是page align，算出page个数
-	bootmap_pfn   = find_bootmap_pfn(0, mi, bootmap_pages);//抠掉np=0上程序执行所需的内存
+	bootmap_pages = find_memend_and_nodes(mi, np);//主要是page align，算出所有bank上page总数
+	bootmap_pfn   = find_bootmap_pfn(0, mi, bootmap_pages);//在node=0上找到bootmap所在位置
 	initrd_node   = check_initrd(mi);
 
-	map_pg = bootmap_pfn;//
+	map_pg = bootmap_pfn;//这个map_pg已经是扣掉代码和数据所剩下的page了
 
 	/*
 	 * Initialise the bootmem nodes.

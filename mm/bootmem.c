@@ -54,7 +54,7 @@ static unsigned long __init init_bootmem_core (pg_data_t *pgdat,
 
 	mapsize = (mapsize + (sizeof(long) - 1UL)) & ~(sizeof(long) - 1UL);//这里是4字节对齐，应该是为了性能考虑。
 	bdata->node_bootmem_map = phys_to_virt(mapstart << PAGE_SHIFT);//mapstart记录的是除去代码运行空间后的内存， 这里看起来是占用了第一个page。
-	bdata->node_boot_start = (start << PAGE_SHIFT);//这里是整个node 的起始
+	bdata->node_boot_start = (start << PAGE_SHIFT);//这里是整个node扣掉程序代码和数据后 的起始
 	bdata->node_low_pfn = end;//整 个node  的结束
 
 	/*
@@ -100,6 +100,7 @@ static void __init reserve_bootmem_core(bootmem_data_t *bdata, unsigned long add
 			printk("hm, page %08lx reserved twice.\n", i*PAGE_SIZE);
 }
 
+//传进来的addr是bank的起始地址
 static void __init free_bootmem_core(bootmem_data_t *bdata, unsigned long addr, unsigned long size)
 {
 	unsigned long i;
@@ -109,9 +110,12 @@ static void __init free_bootmem_core(bootmem_data_t *bdata, unsigned long addr, 
 	 * considered reserved.
 	 */
 	unsigned long sidx;
-	unsigned long eidx = (addr + size - bdata->node_boot_start)/PAGE_SIZE;
+	unsigned long eidx = (addr + size - bdata->node_boot_start)/PAGE_SIZE;//这里的这个bdata->node_boot_star已经除去了程序的代码和数据 部分了
 	unsigned long end = (addr + size)/PAGE_SIZE;
-
+/*
+eidx = 除去代码数据，可用的PAGE个数，其实也就是距离node_boot_start的结束index
+end = bank 的PAGE总个数
+*/
 	if (!size) BUG();
 	if (end > bdata->node_low_pfn)
 		BUG();
@@ -119,10 +123,14 @@ static void __init free_bootmem_core(bootmem_data_t *bdata, unsigned long addr, 
 	/*
 	 * Round up the beginning of the address.
 	 */
-	start = (addr + PAGE_SIZE-1) / PAGE_SIZE;
+	start = (addr + PAGE_SIZE-1) / PAGE_SIZE;//这里对进行了addr的PAGE_SIZE对齐。如果之前已经对齐，那么会保持不变
 	sidx = start - (bdata->node_boot_start/PAGE_SIZE);
-
-	for (i = sidx; i < eidx; i++) {
+/*
+start = 进行PAGE_SIZE 对齐后的 index
+然后又对start这个index减掉了node 起始的PAGE_SIZE index,的以得到的sidx是
+sidx = 距离node_boot_start的起始index
+*/
+	for (i = sidx; i < eidx; i++) {/*看起来bitmap 是放在了node_bootmem_map这块内存中了*/
 		if (!test_and_clear_bit(i, bdata->node_bootmem_map))
 			BUG();
 	}
