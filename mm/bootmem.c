@@ -130,7 +130,7 @@ start = 进行PAGE_SIZE 对齐后的 index
 然后又对start这个index减掉了node 起始的PAGE_SIZE index,的以得到的sidx是
 sidx = 距离node_boot_start的起始index
 */
-	for (i = sidx; i < eidx; i++) {/*看起来bitmap 是放在了node_bootmem_map这块内存中了*/
+	for (i = sidx; i < eidx; i++) {/*bitmap 是放在了node_bootmem_map这块内存中了*/
 		if (!test_and_clear_bit(i, bdata->node_bootmem_map))
 			BUG();
 	}

@@ -499,7 +499,7 @@ void __init paging_init(struct meminfo *mi, struct machine_desc *mdesc)
 	/*
 	 * allocate the zero page.  Note that we count on this going ok.
 	 */
-	zero_page = alloc_bootmem_low_pages(PAGE_SIZE);
+	zero_page = alloc_bootmem_low_pages(PAGE_SIZE);/*申请了一个页*/
 
 	/*
 	 * initialise the page tables.

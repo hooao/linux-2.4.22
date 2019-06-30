@@ -10,8 +10,8 @@
  *  Page table mapping constructs and function prototypes
  */
 struct map_desc {
-	unsigned long virtual;
-	unsigned long physical;
+	unsigned long virtual;/*物理地址*/
+	unsigned long physical;/*虚拟地址*/
 	unsigned long length;
 	int domain:4,
 	    prot_read:1,

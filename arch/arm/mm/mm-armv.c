@@ -307,7 +307,7 @@ void setup_mm_for_reboot(char mode)
  */
 void __init memtable_init(struct meminfo *mi)
 {
-	struct map_desc *init_maps, *p, *q;
+	struct map_desc *init_maps, *p, *q;/*map_desc是内存每个bank, PGDIR的映射信息*/
 	unsigned long address = 0;
 	int i;
 
@@ -327,7 +327,7 @@ void __init memtable_init(struct meminfo *mi)
 		p->bufferable = 1;
 
 		p ++;
-	}
+	}/*这里无非是把mi->bank 中的属性记录在一个PAGE中 init_maps*/
 
 #ifdef FLUSH_BASE
 	p->physical   = FLUSH_BASE_PHYS;
@@ -352,14 +352,14 @@ void __init memtable_init(struct meminfo *mi)
 	p->cacheable  = 1;
 	p->bufferable = 0;
 
-	p ++;
+	p ++;//p指向page中的mem table 的最后位置
 #endif
 
 	/*
 	 * Go through the initial mappings, but clear out any
 	 * pgdir entries that are not in the description.
 	 */
-	q = init_maps;
+	q = init_maps;//q指向page的起始
 	do {
 		if (address < q->virtual || q == p) {
 			clear_mapping(address);
