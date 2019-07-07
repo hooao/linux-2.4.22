@@ -187,14 +187,14 @@ extern inline void flush_tlb(void)
  */
 
 #define PMD_SHIFT	(PAGE_SHIFT + (PAGE_SHIFT-2))
-#define PMD_SIZE	(1UL << PMD_SHIFT)
+#define PMD_SIZE	(1UL << PMD_SHIFT)/* 24 */
 #define PMD_MASK	(~(PMD_SIZE-1))
 
 /* PGDIR_SHIFT determines what a third-level page table entry can map.
  * Since we fold into a two-level structure, this is the same as PMD_SHIFT.
  */
 
-#define PGDIR_SHIFT	PMD_SHIFT
+#define PGDIR_SHIFT	PMD_SHIFT/* 24 */
 #define PGDIR_SIZE	(1UL << PGDIR_SHIFT)
 #define PGDIR_MASK	(~(PGDIR_SIZE-1))
 

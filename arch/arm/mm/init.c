@@ -509,7 +509,7 @@ void __init paging_init(struct meminfo *mi, struct machine_desc *mdesc)
 		mdesc->map_io();
 	flush_cache_all();
 	flush_tlb_all();
-
+////////////////以下是对zone的初始化//////////////////////////////
 	/*
 	 * initialise the zones within each node
 	 */

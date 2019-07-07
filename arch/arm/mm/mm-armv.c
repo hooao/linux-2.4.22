@@ -176,7 +176,7 @@ alloc_init_section(unsigned long virt, unsigned long phys, int prot)
 }
 
 /*
- * Add a PAGE mapping between VIRT and PHYS in domain
+ * Add a PAGE mapping between VIRT and PHYS in domain 建立虚拟内存和物理内存之间的映射关系。
  * DOMAIN with protection PROT.  Note that due to the
  * way we map the PTEs, we must allocate two PTE_SIZE'd
  * blocks - one for the Linux pte table, and one for
@@ -302,12 +302,12 @@ void setup_mm_for_reboot(char mode)
 
 /*
  * Setup initial mappings.  We use the page we allocated for zero page to hold
- * the mappings, which will get overwritten by the vectors in traps_init().
+ * the mappings, which will get overwritten by the vectors in traps_init().申请了一个zero来存放数据，trap_init中有一个
  * The mappings must be in virtual address order.
  */
-void __init memtable_init(struct meminfo *mi)
+void __init memtable_init(struct meminfo *mi)/*这个函数很重要的一点就是，一个memeory bank会占用一个页目录项 */
 {
-	struct map_desc *init_maps, *p, *q;/*map_desc是内存每个bank, PGDIR的映射信息*/
+	struct map_desc *init_maps, *p, *q;/*map_desc是内存每个bank, PGDIR页目录的映射信息*/
 	unsigned long address = 0;
 	int i;
 
@@ -363,9 +363,9 @@ void __init memtable_init(struct meminfo *mi)
 	do {
 		if (address < q->virtual || q == p) {
 			clear_mapping(address);
-			address += PGDIR_SIZE;
+			address += PGDIR_SIZE;//每一个bank占用一段PGDIR
 		} else {
-			create_mapping(q);
+			create_mapping(q);/*正常走到这个这个分支来 */
 
 			address = q->virtual + q->length;
 			address = (address + PGDIR_SIZE - 1) & PGDIR_MASK;
